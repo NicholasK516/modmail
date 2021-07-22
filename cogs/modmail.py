@@ -42,9 +42,7 @@ class Modmail(commands.Cog):
         """
 
         if ctx.guild != self.bot.modmail_guild:
-            return await ctx.send(
-                f"You can only setup in the Modmail guild: {self.bot.modmail_guild}."
-            )
+            return await ctx.send(f"You can only setup in the Modmail guild: {self.bot.modmail_guild}.")
 
         if self.bot.main_category is not None:
             logger.debug("Can't re-setup server, main_category is found.")
@@ -52,9 +50,7 @@ class Modmail(commands.Cog):
 
         if self.bot.modmail_guild is None:
             embed = discord.Embed(
-                title="Error",
-                description="Modmail functioning guild not found.",
-                color=self.bot.error_color,
+                title="Error", description="Modmail functioning guild not found.", color=self.bot.error_color,
             )
             return await ctx.send(embed=embed)
 
@@ -79,15 +75,11 @@ class Modmail(commands.Cog):
                     logger.info("Granting %s access to Modmail category.", key.name)
                     overwrites[key] = discord.PermissionOverwrite(read_messages=True)
 
-        category = await self.bot.modmail_guild.create_category(
-            name="Modmail", overwrites=overwrites
-        )
+        category = await self.bot.modmail_guild.create_category(name="Modmail", overwrites=overwrites)
 
         await category.edit(position=0)
 
-        log_channel = await self.bot.modmail_guild.create_text_channel(
-            name="bot-logs", category=category
-        )
+        log_channel = await self.bot.modmail_guild.create_text_channel(name="bot-logs", category=category)
 
         embed = discord.Embed(
             title="Friendly Reminder",
@@ -190,9 +182,7 @@ class Modmail(commands.Cog):
         else:
             val = truncate(escape_code_block(val), 2048 - 7)
             embed = discord.Embed(
-                title=f'Raw snippet - "{name}":',
-                description=f"```\n{val}```",
-                color=self.bot.main_color,
+                title=f'Raw snippet - "{name}":', description=f"```\n{val}```", color=self.bot.main_color,
             )
 
         return await ctx.send(embed=embed)
@@ -214,9 +204,7 @@ class Modmail(commands.Cog):
         """
         if name in self.bot.snippets:
             embed = discord.Embed(
-                title="Error",
-                color=self.bot.error_color,
-                description=f"Snippet `{name}` already exists.",
+                title="Error", color=self.bot.error_color, description=f"Snippet `{name}` already exists.",
             )
             return await ctx.send(embed=embed)
 
@@ -240,9 +228,7 @@ class Modmail(commands.Cog):
         await self.bot.config.update()
 
         embed = discord.Embed(
-            title="Added snippet",
-            color=self.bot.main_color,
-            description="Successfully created snippet.",
+            title="Added snippet", color=self.bot.main_color, description="Successfully created snippet.",
         )
         return await ctx.send(embed=embed)
 
@@ -328,7 +314,9 @@ class Modmail(commands.Cog):
             silent_words = ["silent", "silently"]
             silent = any(word in silent_words for word in options.split())
 
-        await thread.channel.edit(category=category, sync_permissions=True)
+        await thread.channel.move(
+            category=category, end=True, sync_permissions=True, reason=f"{ctx.author} moved this thread."
+        )
 
         if self.bot.config["thread_move_notify"] and not silent:
             embed = discord.Embed(
@@ -434,9 +422,7 @@ class Modmail(commands.Cog):
     @commands.command(aliases=["alert"])
     @checks.has_permissions(PermissionLevel.SUPPORTER)
     @checks.thread_only()
-    async def notify(
-        self, ctx, *, user_or_role: Union[discord.Role, User, str.lower, None] = None
-    ):
+    async def notify(self, ctx, *, user_or_role: Union[discord.Role, User, str.lower, None] = None):
         """
         Notify a user or role when the next thread message received.
 
@@ -459,8 +445,7 @@ class Modmail(commands.Cog):
 
         if mention in mentions:
             embed = discord.Embed(
-                color=self.bot.error_color,
-                description=f"{mention} is already going to be mentioned.",
+                color=self.bot.error_color, description=f"{mention} is already going to be mentioned.",
             )
         else:
             mentions.append(mention)
@@ -474,9 +459,7 @@ class Modmail(commands.Cog):
     @commands.command(aliases=["unalert"])
     @checks.has_permissions(PermissionLevel.SUPPORTER)
     @checks.thread_only()
-    async def unnotify(
-        self, ctx, *, user_or_role: Union[discord.Role, User, str.lower, None] = None
-    ):
+    async def unnotify(self, ctx, *, user_or_role: Union[discord.Role, User, str.lower, None] = None):
         """
         Un-notify a user, role, or yourself from a thread.
 
@@ -497,8 +480,7 @@ class Modmail(commands.Cog):
 
         if mention not in mentions:
             embed = discord.Embed(
-                color=self.bot.error_color,
-                description=f"{mention} does not have a pending notification.",
+                color=self.bot.error_color, description=f"{mention} does not have a pending notification.",
             )
         else:
             mentions.remove(mention)
@@ -511,9 +493,7 @@ class Modmail(commands.Cog):
     @commands.command(aliases=["sub"])
     @checks.has_permissions(PermissionLevel.SUPPORTER)
     @checks.thread_only()
-    async def subscribe(
-        self, ctx, *, user_or_role: Union[discord.Role, User, str.lower, None] = None
-    ):
+    async def subscribe(self, ctx, *, user_or_role: Union[discord.Role, User, str.lower, None] = None):
         """
         Notify a user, role, or yourself for every thread message received.
 
@@ -536,8 +516,7 @@ class Modmail(commands.Cog):
 
         if mention in mentions:
             embed = discord.Embed(
-                color=self.bot.error_color,
-                description=f"{mention} is already subscribed to this thread.",
+                color=self.bot.error_color, description=f"{mention} is already subscribed to this thread.",
             )
         else:
             mentions.append(mention)
@@ -551,9 +530,7 @@ class Modmail(commands.Cog):
     @commands.command(aliases=["unsub"])
     @checks.has_permissions(PermissionLevel.SUPPORTER)
     @checks.thread_only()
-    async def unsubscribe(
-        self, ctx, *, user_or_role: Union[discord.Role, User, str.lower, None] = None
-    ):
+    async def unsubscribe(self, ctx, *, user_or_role: Union[discord.Role, User, str.lower, None] = None):
         """
         Unsubscribe a user, role, or yourself from a thread.
 
@@ -574,15 +551,13 @@ class Modmail(commands.Cog):
 
         if mention not in mentions:
             embed = discord.Embed(
-                color=self.bot.error_color,
-                description=f"{mention} is not subscribed to this thread.",
+                color=self.bot.error_color, description=f"{mention} is not subscribed to this thread.",
             )
         else:
             mentions.remove(mention)
             await self.bot.config.update()
             embed = discord.Embed(
-                color=self.bot.main_color,
-                description=f"{mention} is now unsubscribed from this thread.",
+                color=self.bot.main_color, description=f"{mention} is now unsubscribed from this thread.",
             )
         return await ctx.send(embed=embed)
 
@@ -638,7 +613,9 @@ class Modmail(commands.Cog):
             prefix = self.bot.config["log_url_prefix"].strip("/")
             if prefix == "NONE":
                 prefix = ""
-            log_url = f"{self.bot.config['log_url'].strip('/')}{'/' + prefix if prefix else ''}/{entry['key']}"
+            log_url = (
+                f"{self.bot.config['log_url'].strip('/')}{'/' + prefix if prefix else ''}/{entry['key']}"
+            )
 
             username = entry["recipient"]["name"] + "#"
             username += entry["recipient"]["discriminator"]
@@ -707,8 +684,7 @@ class Modmail(commands.Cog):
 
         if not any(not log["open"] for log in logs):
             embed = discord.Embed(
-                color=self.bot.error_color,
-                description="This user does not have any previous logs.",
+                color=self.bot.error_color, description="This user does not have any previous logs.",
             )
             return await ctx.send(embed=embed)
 
@@ -735,8 +711,7 @@ class Modmail(commands.Cog):
 
         if not embeds:
             embed = discord.Embed(
-                color=self.bot.error_color,
-                description="No log entries have been found for that query.",
+                color=self.bot.error_color, description="No log entries have been found for that query.",
             )
             return await ctx.send(embed=embed)
 
@@ -755,9 +730,7 @@ class Modmail(commands.Cog):
 
         if not success:
             embed = discord.Embed(
-                title="Error",
-                description=f"Log entry `{key}` not found.",
-                color=self.bot.error_color,
+                title="Error", description=f"Log entry `{key}` not found.", color=self.bot.error_color,
             )
         else:
             embed = discord.Embed(
@@ -810,8 +783,7 @@ class Modmail(commands.Cog):
 
         if not embeds:
             embed = discord.Embed(
-                color=self.bot.error_color,
-                description="No log entries have been found for that query.",
+                color=self.bot.error_color, description="No log entries have been found for that query.",
             )
             return await ctx.send(embed=embed)
 
@@ -946,9 +918,7 @@ class Modmail(commands.Cog):
         async with ctx.typing():
             msg = await ctx.thread.note(ctx.message, persistent=True)
             await msg.pin()
-        await self.bot.api.create_note(
-            recipient=ctx.thread.recipient, message=ctx.message, message_id=msg.id
-        )
+        await self.bot.api.create_note(recipient=ctx.thread.recipient, message=ctx.message, message_id=msg.id)
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.SUPPORTER)
@@ -1011,26 +981,20 @@ class Modmail(commands.Cog):
             category = None
 
         if user.bot:
-            embed = discord.Embed(
-                color=self.bot.error_color, description="Cannot start a thread with a bot."
-            )
+            embed = discord.Embed(color=self.bot.error_color, description="Cannot start a thread with a bot.")
             return await ctx.send(embed=embed, delete_after=3)
 
         exists = await self.bot.threads.find(recipient=user)
         if exists:
             embed = discord.Embed(
                 color=self.bot.error_color,
-                description="A thread for this user already "
-                f"exists in {exists.channel.mention}.",
+                description="A thread for this user already " f"exists in {exists.channel.mention}.",
             )
             await ctx.channel.send(embed=embed, delete_after=3)
 
         else:
             thread = await self.bot.threads.create(
-                recipient=user,
-                creator=ctx.author,
-                category=category,
-                manual_trigger=manual_trigger,
+                recipient=user, creator=ctx.author, category=category, manual_trigger=manual_trigger,
             )
             if thread.cancelled:
                 return
@@ -1044,9 +1008,7 @@ class Modmail(commands.Cog):
                 else:
                     description = f"{ctx.author.name} has opened a Modmail thread."
 
-                em = discord.Embed(
-                    title="New Thread", description=description, color=self.bot.main_color,
-                )
+                em = discord.Embed(title="New Thread", description=description, color=self.bot.main_color,)
                 if self.bot.config["show_timestamp"]:
                     em.timestamp = datetime.utcnow()
                 em.set_footer(icon_url=ctx.author.avatar_url)
@@ -1088,8 +1050,7 @@ class Modmail(commands.Cog):
                 end_time = re.search(r"%([^%]+?)%", reason)
                 if end_time is not None:
                     logger.warning(
-                        r"Deprecated time message for user %s, block and unblock again to update.",
-                        id_,
+                        r"Deprecated time message for user %s, block and unblock again to update.", id_,
                     )
 
             if end_time is not None:
@@ -1120,8 +1081,7 @@ class Modmail(commands.Cog):
                 end_time = re.search(r"%([^%]+?)%", reason)
                 if end_time is not None:
                     logger.warning(
-                        r"Deprecated time message for role %s, block and unblock again to update.",
-                        id_,
+                        r"Deprecated time message for role %s, block and unblock again to update.", id_,
                     )
 
             if end_time is not None:
@@ -1143,9 +1103,7 @@ class Modmail(commands.Cog):
                 line = mention + f" - {reason or 'No Reason Provided'}\n"
                 if len(embed.description) + len(line) > 2048:
                     embed = discord.Embed(
-                        title="Blocked Users (Continued)",
-                        color=self.bot.main_color,
-                        description=line,
+                        title="Blocked Users (Continued)", color=self.bot.main_color, description=line,
                     )
                     embeds.append(embed)
                 else:
@@ -1153,9 +1111,7 @@ class Modmail(commands.Cog):
         else:
             embeds[0].description = "Currently there are no blocked users."
 
-        embeds.append(
-            discord.Embed(title="Blocked Roles", color=self.bot.main_color, description="")
-        )
+        embeds.append(discord.Embed(title="Blocked Roles", color=self.bot.main_color, description=""))
 
         if roles:
             embed = embeds[-1]
@@ -1164,9 +1120,7 @@ class Modmail(commands.Cog):
                 line = mention + f" - {reason or 'No Reason Provided'}\n"
                 if len(embed.description) + len(line) > 2048:
                     embed = discord.Embed(
-                        title="Blocked Roles (Continued)",
-                        color=self.bot.main_color,
-                        description=line,
+                        title="Blocked Roles (Continued)", color=self.bot.main_color, description=line,
                     )
                     embeds.append(embed)
                 else:
@@ -1226,9 +1180,7 @@ class Modmail(commands.Cog):
             )
         else:
             embed = discord.Embed(
-                title="Success",
-                color=self.bot.main_color,
-                description=f"{mention} is now whitelisted.",
+                title="Success", color=self.bot.main_color, description=f"{mention} is now whitelisted.",
             )
 
         return await ctx.send(embed=embed)
@@ -1306,9 +1258,7 @@ class Modmail(commands.Cog):
             )
         else:
             embed = discord.Embed(
-                title="Success",
-                color=self.bot.main_color,
-                description=f"{mention} is now blocked {reason}",
+                title="Success", color=self.bot.main_color, description=f"{mention} is now blocked {reason}",
             )
 
         if isinstance(user_or_role, discord.Role):
@@ -1341,10 +1291,7 @@ class Modmail(commands.Cog):
         mention = getattr(user_or_role, "mention", f"`{user_or_role.id}`")
         name = getattr(user_or_role, "name", f"`{user_or_role.id}`")
 
-        if (
-            not isinstance(user_or_role, discord.Role)
-            and str(user_or_role.id) in self.bot.blocked_users
-        ):
+        if not isinstance(user_or_role, discord.Role) and str(user_or_role.id) in self.bot.blocked_users:
             msg = self.bot.blocked_users.pop(str(user_or_role.id)) or ""
             await self.bot.config.update()
 
@@ -1369,17 +1316,12 @@ class Modmail(commands.Cog):
                     color=self.bot.main_color,
                     description=f"{mention} is no longer blocked.",
                 )
-        elif (
-            isinstance(user_or_role, discord.Role)
-            and str(user_or_role.id) in self.bot.blocked_roles
-        ):
+        elif isinstance(user_or_role, discord.Role) and str(user_or_role.id) in self.bot.blocked_roles:
             msg = self.bot.blocked_roles.pop(str(user_or_role.id)) or ""
             await self.bot.config.update()
 
             embed = discord.Embed(
-                title="Success",
-                color=self.bot.main_color,
-                description=f"{mention} is no longer blocked.",
+                title="Success", color=self.bot.main_color, description=f"{mention} is no longer blocked.",
             )
         else:
             embed = discord.Embed(
@@ -1436,8 +1378,7 @@ class Modmail(commands.Cog):
 
         # Search cache for channel
         user_id, thread = next(
-            ((k, v) for k, v in self.bot.threads.cache.items() if v.channel == ctx.channel),
-            (-1, None),
+            ((k, v) for k, v in self.bot.threads.cache.items() if v.channel == ctx.channel), (-1, None),
         )
         if thread is not None:
             logger.debug("Found thread with tempered ID.")
@@ -1465,12 +1406,8 @@ class Modmail(commands.Cog):
                             self.bot.threads, recipient, ctx.channel
                         )
                     thread.ready = True
-                    logger.info(
-                        "Setting current channel's topic to User ID and created new thread."
-                    )
-                    await ctx.channel.edit(
-                        reason="Fix broken Modmail thread", topic=f"User ID: {user_id}"
-                    )
+                    logger.info("Setting current channel's topic to User ID and created new thread.")
+                    await ctx.channel.edit(reason="Fix broken Modmail thread", topic=f"User ID: {user_id}")
                     return await self.bot.add_reaction(ctx.message, sent_emoji)
 
         else:
@@ -1482,8 +1419,7 @@ class Modmail(commands.Cog):
         if m is not None:
             users = set(
                 filter(
-                    lambda member: member.name == m.group(1)
-                    and member.discriminator == m.group(2),
+                    lambda member: member.name == m.group(1) and member.discriminator == m.group(2),
                     ctx.guild.members,
                 )
             )
@@ -1508,9 +1444,7 @@ class Modmail(commands.Cog):
                         except discord.HTTPException:
                             pass
                 if recipient is None:
-                    self.bot.threads.cache[user.id] = thread = Thread(
-                        self.bot.threads, user_id, ctx.channel
-                    )
+                    self.bot.threads.cache[user.id] = thread = Thread(self.bot.threads, user_id, ctx.channel)
                 else:
                     self.bot.threads.cache[user.id] = thread = Thread(
                         self.bot.threads, recipient, ctx.channel
